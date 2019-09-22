@@ -12,7 +12,6 @@ import sys
 
 # exists problem when using multiprocessing Queue program won't end
 def read_directory(directory, pending_file_queue, pending_dir_queue, examineFileType = ['.exe']):
-    print('start')
     for root, dirs, files in os.walk(directory):
         for f in files:
             if os.path.splitext(f)[-1] in examineFileType:
@@ -24,16 +23,21 @@ def read_directory(directory, pending_file_queue, pending_dir_queue, examineFile
         #     pending_dir_queue.put(directory_name)
 
 def process_files(pending_file_queue, processed_file_queue, problem_file_queue):
-    try:
-        while not pending_file_queue.empty():
-            file_name = pending_file_queue.get()
+    while not pending_file_queue.empty():
+        file_name = pending_file_queue.get()
+        try:
             analysis.pefile_dump(file_name)
             file_info = analysis.file_info(file_name)
             processed_file_queue.put(file_info)
             print("[{} files remaining] Finished Processing {}...".format(pending_file_queue.qsize(),file_name))
-    except:
-        logging.exception('Exception Occured')
-        raise
+        except OSError:
+            logging.exception(OSError)
+            error_dict = {
+                'file_name' : file_name,
+                'error' : OSError,
+            }
+            problem_file_queue.put(error_dict)
+        
 
 def get_runtime(func):
     start = time.time()
@@ -75,6 +79,12 @@ if __name__ == '__main__':
         all_files.append(processed_file_queue.get())
     df = pandas.DataFrame(all_files)
     df.to_excel(os.path.join(dataDir,'exeInfo.xlsx'),index=False)
+
+    error_files = []
+    while not problem_file_queue.empty():
+        error_files.append(problem_file_queue.get())
+    df = pandas.DataFrame(error_files)
+    df.to_excel(os.path.join(dataDir,'error.xlsx'),index=False)
 
     
     # round1

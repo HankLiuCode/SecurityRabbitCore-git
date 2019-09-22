@@ -1,6 +1,6 @@
 import os
 import pefile
-from pefile import ordlookup
+from pefile import ordlookup 
 import peutils
 import wmi
 import subprocess
