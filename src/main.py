@@ -26,8 +26,7 @@ def process_files(pending_file_queue, processed_file_queue, problem_file_queue):
     while not pending_file_queue.empty():
         file_name = pending_file_queue.get()
         try:
-            # analysis.pefile_dump(file_name)
-            file_info = analysis.file_info(file_name)
+            file_info = analysis.analysis_summary(file_name)
             processed_file_queue.put(file_info)
             print("[{} files remaining] Finished Processing {}...".format(pending_file_queue.qsize(),file_name))
         except OSError:
@@ -37,24 +36,22 @@ def process_files(pending_file_queue, processed_file_queue, problem_file_queue):
                 'error' : OSError,
             }
             problem_file_queue.put(error_dict)
-        
-
-def get_runtime(func):
-    start = time.time()
-    func()
-    end = time.time()
-    duration = end - start
-    return duration
+        except:
+            logging.exception("Error")
+            error_dict = {
+                'file_name' : file_name,
+                'error' : 'Error',
+            }
+            problem_file_queue.put(error_dict)
 
 
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
     parser.add_argument("directories", nargs="+", help="the root directory(s) you want to scan")
-    parser.add_argument("--hostInfo", dest="hostInfo", action="store_true", help="set to True to scan hostInfo")
-    #parser.add_argument("--pefileDump", dest="pefileDump", action="store_true", help="set to True to pefileDump")
-    args = parser.parse_args()
+    #parser.add_argument("--scanType", help= "0:quickScan, 1:normalScan, 2:deepScan")
     
+    args = parser.parse_args()
     manager = multiprocessing.Manager()
     problem_file_queue = manager.Queue()
     pending_file_queue = manager.Queue()
@@ -68,7 +65,7 @@ if __name__ == '__main__':
     producers.join()
 
     consumers = multiprocessing.Pool()
-    for i in range(10):
+    for i in range(4):
         consumers.apply_async(process_files, args = (pending_file_queue, processed_file_queue, problem_file_queue))
     consumers.close()
     consumers.join()
