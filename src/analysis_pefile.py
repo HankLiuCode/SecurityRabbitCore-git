@@ -5,7 +5,7 @@ from pefile import ordlookup as pefile_ordlookup
 from os import path as os_path
 
 
-def pefile_analysis(filepath):
+def analysis_pefile(filepath):
     pe_file = pefile.PE(filepath, fast_load=True)
     #pefile_dump(pe_file)
 

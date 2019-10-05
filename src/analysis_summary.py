@@ -8,8 +8,8 @@ import io
 import re
 
 import settings
-from pefile_analysis import pefile_analysis
-from byte_analysis import byte_analysis
+from analysis_pefile import analysis_pefile
+from analysis_byte import analysis_byte
 
 def host_info():
     """
@@ -44,8 +44,8 @@ def analysis_summary(filepath):
     analysis_dict = {}
     analysis_dict.update(file_info(filepath))
     analysis_dict.update(sigcheck(filepath))
-    analysis_dict.update(pefile_analysis(filepath))
-    analysis_dict.update(byte_analysis(filepath))
+    analysis_dict.update(analysis_pefile(filepath))
+    analysis_dict.update(analysis_byte(filepath))
     return analysis_dict
 
 def file_info(filepath):
@@ -144,12 +144,4 @@ def signers(sigcheck_str_list):
     return signers_dict
 
 
-
-if __name__ == '__main__':
-    t1 = "C:/Users/user/AppData/Local/LINE/bin/LineLauncher.exe"
-    t2 = "../testdir/testdir1/python.exe"
-    testfiles = [t1,t2]
-    
-    for t in testfiles:
-        sigcheck(t)
     

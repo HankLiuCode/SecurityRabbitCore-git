@@ -2,7 +2,7 @@ from hashlib import sha1 as hashlib_sha1
 from string import printable as string_printable
 from math import log as math_log
 
-def byte_analysis(filepath):
+def analysis_byte(filepath):
     chunk_size = 8192
     printable_chars = set(bytes(string_printable,'ascii'))
     printable_str_list = []

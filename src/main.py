@@ -5,7 +5,7 @@ import logging
 import pandas
 
 from settings import baseDir,dataDir
-import analysis
+import analysis_summary
 import argparse
 import sys
 
