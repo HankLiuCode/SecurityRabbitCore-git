@@ -11,6 +11,12 @@ import settings
 from analysis_pefile import analysis_pefile
 from analysis_byte import analysis_byte
 
+
+# reg key
+# packer true false + text
+# signers 
+
+
 def host_info():
     """
     1. 取得掃描端點之硬體、軟體及作業系統資訊(wmi)
@@ -32,7 +38,6 @@ def host_info():
         totalSize += int(memModule.Capacity)
     host_info_dict['memoryCapacity'] = totalSize/1048576
     
-
     registry_list = []
     for s in w.Win32_StartupCommand(): 
         registry_list.append((s.Location, s.Caption, s.Command))
@@ -142,6 +147,11 @@ def signers(sigcheck_str_list):
 
     #print(signers_dict)
     return signers_dict
+
+if __name__ == "__main__":
+    testfile = '../testdir/testdir1/_conda.exe'
+    output = sigcheck(testfile)
+    print(output)
 
 
     
