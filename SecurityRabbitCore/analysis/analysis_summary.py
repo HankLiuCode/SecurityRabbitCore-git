@@ -1,49 +1,18 @@
 import os
-import wmi
-import subprocess
-import platform
-import time
-import win32api
-import io
 import re
+import subprocess
+from time import ctime as time_ctime
+from win32api import GetFileAttributes as win32api_GetFileAttributes
+from io import StringIO as io_StringIO
 
 import settings
 from analysis_pefile import analysis_pefile
 from analysis_byte import analysis_byte
 
-
 # reg key
 # packer true false + text
-# signers 
+# signers
 
-
-def host_info():
-    """
-    1. 取得掃描端點之硬體、軟體及作業系統資訊(wmi)
-    2. 判斷檔案是否註冊於windows系統機碼，開機可自動啟動(wmi) 
-    """
-    w = wmi.WMI()
-    host_info_dict = {}
-    
-    x = subprocess.check_output('wmic csproduct get UUID')
-    host_info_dict['deviceUUID']= x.decode("utf-8").replace('UUID','').replace('\n','').replace('\r','').replace(' ','')
-    host_info_dict['deviceName'] = platform.node()
-    host_info_dict['os'] = "{}-{}".format(platform.system(),platform.version())
-    host_info_dict['processor'] = platform.processor()
-    host_info_dict['cpu'] = platform.machine()
-    host_info_dict['userName'] = os.getlogin()
-    
-    totalSize = 0
-    for memModule in w.Win32_PhysicalMemory():
-        totalSize += int(memModule.Capacity)
-    host_info_dict['memoryCapacity'] = totalSize/1048576
-    
-    registry_list = []
-    for s in w.Win32_StartupCommand(): 
-        registry_list.append((s.Location, s.Caption, s.Command))
-    host_info_dict['registry_list'] = registry_list
-
-    return host_info_dict
 
 def analysis_summary(filepath):
     analysis_dict = {}
@@ -54,11 +23,11 @@ def analysis_summary(filepath):
     return analysis_dict
 
 def file_info(filepath):
-    created = time.ctime(os.path.getctime(filepath))   # create time
-    last_modified = time.ctime(os.path.getmtime(filepath))   # modified time
-    last_accessed = time.ctime(os.path.getatime(filepath))   # access time
+    created = time_ctime(os.path.getctime(filepath))   # create time
+    last_modified = time_ctime(os.path.getmtime(filepath))   # modified time
+    last_accessed = time_ctime(os.path.getatime(filepath))   # access time
     file_size = os.stat(filepath).st_size
-    file_attribute = win32api.GetFileAttributes(filepath)
+    file_attribute = win32api_GetFileAttributes(filepath)
     file_info_dict = {
         'file_name':filepath,
         'file_size':file_size,
@@ -95,7 +64,7 @@ def sigcheck(filepath):
         attribute_name, attribute_val = attr.split(":",1)
         sigcheck_dict["sigcheck_"+attribute_name] = attribute_val
     
-    sigcheck_str_list = [line.replace('\n','').replace('\r','') for line in io.StringIO(sigcheck_str).readlines()]
+    sigcheck_str_list = [line.replace('\n','').replace('\r','') for line in io_StringIO(sigcheck_str).readlines()]
     signers_dict = signers(sigcheck_str_list)
 
     sigcheck_dict.update(signers_dict)
@@ -151,7 +120,9 @@ def signers(sigcheck_str_list):
 if __name__ == "__main__":
     testfile = '../testdir/testdir1/_conda.exe'
     output = sigcheck(testfile)
+    output2 = file_info(testfile)
     print(output)
-
+    print(output2)
+    
 
     

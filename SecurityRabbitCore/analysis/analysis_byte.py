@@ -8,9 +8,14 @@ def analysis_byte(filepath):
     printable_str_list = []
     sha1 = hashlib_sha1()
     one_gram_byte_dict = {}
+    two_gram_byte_dict = {}
     
     for i in range(256):
         one_gram_byte_dict[hex(i)] = 0
+    
+    for i in range(256):
+        for j in range(256):
+            two_gram_byte_dict[hex(i)+hex(j)] = 0
 
     with open(filepath,'rb') as f:
         while True:
@@ -18,6 +23,7 @@ def analysis_byte(filepath):
             if not chunk:
                 break
             one_gram_byte_analysis(chunk, one_gram_byte_dict)
+            two_gram_byte_analysis(chunk, two_gram_byte_dict)
             byte_printable(chunk, printable_chars, printable_str_list)
             sha1.update(chunk)
     entropy = calc_entropy(one_gram_byte_dict)
@@ -28,6 +34,7 @@ def analysis_byte(filepath):
         'file_sha1': sha1.hexdigest()
     }
     byte_analysis_dict.update(one_gram_byte_dict)
+    #byte_analysis_dict.update(two_gram_byte_dict)
 
     return byte_analysis_dict
 
@@ -40,7 +47,7 @@ def two_gram_byte_analysis(chunk, two_gram_byte_dict):
     for byte in chunk:
         if previous_byte:
             two_gram_byte_dict[hex(previous_byte)+hex(byte)] += 1
-            previous_byte = byte
+        previous_byte = byte
 
 def byte_printable(chunk,printable_chars,printable_str_list):
     temp_bytes = b""
