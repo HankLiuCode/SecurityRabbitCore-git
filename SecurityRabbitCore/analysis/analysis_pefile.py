@@ -1,37 +1,18 @@
-import settings
 import pefile
 import peutils
 from pefile import ordlookup as pefile_ordlookup
 from os import path as os_path
 
 
-def analysis_pefile(filepath):
+def analysis_pefile(filepath, userdb_filter_txt):
     pe_file = pefile.PE(filepath, fast_load=True)
     #pefile_dump(pe_file)
 
     pefile_dict={}
     pefile_dict.update(dll_import_analysis(pe_file))
-    pefile_dict.update(check_pack(pe_file))
+    pefile_dict.update(check_pack(pe_file, userdb_filter_txt))
     pefile_dict.update(pefile_infos(pe_file))
     return pefile_dict
-
-def pefile_dump(pe_file):
-    filename = os_path.join(settings.dataDir,'pefileInfo.txt')
-    fileIndex = os_path.join(settings.dataDir,'pefileIndex.txt')
-    try:
-
-        start = 0
-        end = 0
-        with open(filename,'a') as f:
-            start = f.tell()
-            f.write(pe_file.dump_info())
-            end = f.tell()
-        with open(fileIndex,'a') as i:
-            i.write("{} {} {} \n".format(filepath,start,end))
-        
-        return "file stored at {}".format(dataDir)
-    except:
-        pass
 
 def dll_import_analysis(pe_file):
     NETWORKING_AND_INTERNET_DLLS = ['dnsapi.dll', 'dhcpcsvc.dll', 'dhcpcsvc6.dll', 'dhcpsapi.dll', 'connect.dll', 
@@ -136,15 +117,12 @@ def pefile_infos(pe_file):
             export_li.append(exp.name.decode('ascii'))    # export_li.append([hex(pe_file.OPTIONAL_HEADER.ImageBase + exp.address), exp.name.decode('ascii'), exp.ordinal])
     basic_dic['Export_directories'] = export_li
     
-    # dump_info
-    # pe.dump_info() 這個可以先照原本存在txt裡面~ 我有空再來想想看怎麼處理其他雜七雜八的資訊比較好~
             
     return basic_dic
 
-def check_pack(pe_file):
-    signature_file = os_path.join(settings.resourceDir,'userdb_filter.txt')
+def check_pack(pe_file, userdb_filter_txt):
     signatures = None
-    with open(signature_file,'r',encoding='utf-8') as f:
+    with open(userdb_filter_txt,'r',encoding='utf-8') as f:
         sig_data = f.read()
         signatures = peutils.SignatureDatabase(data = sig_data)
 
