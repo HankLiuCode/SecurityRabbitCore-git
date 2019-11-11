@@ -42,7 +42,8 @@ if __name__ == '__main__':
     while not processed_file_queue.empty():
         all_files.append(processed_file_queue.get())
     df = pandas.DataFrame(all_files)
-    df.to_json('exeInfo.json')
+    #df.to_json('exeInfo.json')
+    df.to_excel('exeInfo.xlsx')
         
 
     error_files = []

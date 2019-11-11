@@ -3,55 +3,38 @@ from string import printable as string_printable
 from math import log as math_log
 
 def analysis_byte(filepath):
-    chunk_size = 8192
-    printable_chars = set(bytes(string_printable,'ascii'))
-    printable_str_list = []
-    sha1 = hashlib_sha1()
-    one_gram_byte_dict = {}
-    two_gram_byte_dict = {}
-    
-    for i in range(256):
-        one_gram_byte_dict[hex(i)] = 0
-    
-    for i in range(256):
-        for j in range(256):
-            two_gram_byte_dict[hex(i)+hex(j)] = 0
-
     with open(filepath,'rb') as f:
-        while True:
-            chunk = f.read()
-            if not chunk:
-                break
-            one_gram_byte_analysis(chunk, one_gram_byte_dict)
-            two_gram_byte_analysis(chunk, two_gram_byte_dict)
-            byte_printable(chunk, printable_chars, printable_str_list)
-            sha1.update(chunk)
-    entropy = calc_entropy(one_gram_byte_dict)
+        filebuffer = f.read()
+        one_gram_dict = one_gram_byte_analysis(filebuffer)
+        printable_strs = byte_printable(filebuffer)
+    sha1 = hashlib_sha1()
+    sha1.update(filebuffer)
+    entropy = calc_entropy(one_gram_dict)
     
     byte_analysis_dict = {
-        'printable_strs' : printable_str_list,
+        'printable_strs' : byte_printable,
         'entropy' : entropy,
         'file_sha1': sha1.hexdigest()
     }
-    byte_analysis_dict.update(one_gram_byte_dict)
-    #byte_analysis_dict.update(two_gram_byte_dict)
+    byte_analysis_dict.update(one_gram_dict)
 
     return byte_analysis_dict
 
-def one_gram_byte_analysis(chunk,one_gram_byte_dict):
-    for byte in chunk:
+def one_gram_byte_analysis(filebuffer):
+    one_gram_byte_dict = {}
+    for i in range(256):
+        one_gram_byte_dict[hex(i)] = 0
+    for byte in filebuffer:
         one_gram_byte_dict[hex(byte)] += 1
+    
+    return one_gram_byte_dict
 
-def two_gram_byte_analysis(chunk, two_gram_byte_dict):
-    previous_byte = None
-    for byte in chunk:
-        if previous_byte:
-            two_gram_byte_dict[hex(previous_byte)+hex(byte)] += 1
-        previous_byte = byte
 
-def byte_printable(chunk,printable_chars,printable_str_list):
+def byte_printable(filebuffer):
+    printable_str_list = []
+    printable_chars = set(bytes(string_printable,'ascii'))
     temp_bytes = b""
-    for byte in chunk:
+    for byte in filebuffer:
         if byte in printable_chars:
             temp_bytes += bytes([byte])
         
