@@ -5,7 +5,10 @@ import pandas
 import json
 
 from module import read_directory, process_files
-from analysis import host_info
+try:
+    from analysis_host import host_info
+except:
+    print("unable to load analysis_host")
 import argparse
 import sys
 
@@ -54,5 +57,4 @@ if __name__ == '__main__':
 
     # Error Report
     # OSError: [WinError 1920] 系統無法存取該檔案。: 'C:/Users/user\\AppData\\Local\\Microsoft\\WindowsApps\\protocolhandler.exe'
-
     # Race condition in pefileIndex pefileInfo

@@ -1,6 +1,6 @@
 import os
 import logging
-from analysis import analysis_summary
+from analysis_file import analysis_summary
 
 # exists problem when using multiprocessing Queue program won't end
 def read_directory(directory, pending_file_queue, pending_dir_queue, examineFileType = ['.exe']):

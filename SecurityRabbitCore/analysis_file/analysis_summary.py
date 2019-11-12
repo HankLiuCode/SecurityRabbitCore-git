@@ -2,7 +2,6 @@ import os
 import re
 import subprocess
 from time import ctime as time_ctime
-from io import StringIO as io_StringIO
 
 from .analysis_pefile import analysis_pefile
 from .analysis_byte import analysis_byte
