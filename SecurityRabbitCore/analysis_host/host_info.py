@@ -2,6 +2,7 @@ import os
 import wmi
 import subprocess
 import platform
+import re, uuid
 
 def host_info():
     """
@@ -18,6 +19,8 @@ def host_info():
     host_info_dict['processor'] = platform.processor()
     host_info_dict['cpu'] = platform.machine()
     host_info_dict['userName'] = os.getlogin()
+    mac_addr = re.findall("..",hex(uuid.getnode()))[1:]
+    host_info_dict['MAC'] = ":".join(mac_addr)
     
     totalSize = 0
     for memModule in w.Win32_PhysicalMemory():

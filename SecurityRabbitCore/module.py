@@ -1,6 +1,8 @@
 import os
 import logging
-from analysis_file import analysis_summary
+from analysis_file import analysis_byte
+from analysis_file import analysis_pefile
+from analysis_file import analysis_other
 
 # exists problem when using multiprocessing Queue program won't end
 def read_directory(directory, pending_file_queue, pending_dir_queue, examineFileType = ['.exe']):
@@ -20,7 +22,9 @@ def process_files(pending_file_queue, processed_file_queue, problem_file_queue):
         try:
             sigcheck_exe_path = 'sigcheck.exe'
             userdb_filter_txt = 'userdb_filter.txt'
-            file_info = analysis_summary(file_name, sigcheck_exe_path, userdb_filter_txt)
+            file_info = analysis_other(file_name,sigcheck_exe_path)
+            file_info.update(analysis_byte(file_name))
+            file_info.update(analysis_pefile(file_name,userdb_filter_txt))
             processed_file_queue.put(file_info)
             print("[{} files remaining] Finished Processing {}...".format(pending_file_queue.qsize(),file_name))
         except OSError:

@@ -11,7 +11,7 @@ def analysis_pefile(filepath, userdb_filter_txt):
     pefile_dict={}
     pefile_dict.update(dll_import_analysis(pe_file))
     pefile_dict.update(check_pack(pe_file, userdb_filter_txt))
-    pefile_dict.update(pefile_infos(pe_file))
+    pefile_dict.update(pefile_info(pe_file))
     return pefile_dict
 
 def dll_import_analysis(pe_file):
@@ -66,7 +66,7 @@ def dll_import_analysis(pe_file):
             }
     return dll_analysis_dict
 
-def pefile_infos(pe_file):
+def pefile_info(pe_file):
 
     # basic info
     basic_dic = {}

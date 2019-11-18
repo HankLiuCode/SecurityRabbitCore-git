@@ -12,7 +12,7 @@ def analysis_byte(filepath):
     entropy = calc_entropy(one_gram_dict)
     
     byte_analysis_dict = {
-        'printable_strs' : byte_printable,
+        'printable_strs' : printable_strs,
         'entropy' : entropy,
         'file_sha1': sha1.hexdigest()
     }
@@ -28,7 +28,6 @@ def one_gram_byte_analysis(filebuffer):
         one_gram_byte_dict[hex(byte)] += 1
     
     return one_gram_byte_dict
-
 
 def byte_printable(filebuffer):
     printable_str_list = []

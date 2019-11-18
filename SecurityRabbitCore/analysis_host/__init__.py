@@ -1,1 +1,1 @@
-from .hostinfo import host_info
+from .host_info import host_info
