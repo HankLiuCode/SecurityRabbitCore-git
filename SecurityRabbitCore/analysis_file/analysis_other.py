@@ -11,11 +11,11 @@ from .analysis_byte import analysis_byte
 # signers
 
 def analysis_other(filepath, sigcheck_path):
-    other_info = basic_file_info(filepath)
+    other_info = basic_file_info(filepath, testMode=True)
     other_info.update(sigcheck(filepath, sigcheck_path))
     return other_info
 
-def basic_file_info(filepath):
+def basic_file_info(filepath, testMode, isMalware=0):
     created = time_ctime(os.path.getctime(filepath))   # create time
     last_modified = time_ctime(os.path.getmtime(filepath))   # modified time
     last_accessed = time_ctime(os.path.getatime(filepath))   # access time
@@ -26,8 +26,11 @@ def basic_file_info(filepath):
         'created':created,
         'last_modified':last_modified,
         'last_accessed':last_accessed
-
     }
+    if testMode:
+        file_info_dict.update({
+            'isMalware': isMalware
+        })
     return file_info_dict
 
 def sigcheck(filepath, sigcheck_exe_path):

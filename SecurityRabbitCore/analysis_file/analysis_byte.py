@@ -30,6 +30,7 @@ def one_gram_byte_analysis(filebuffer):
     return one_gram_byte_dict
 
 def byte_printable(filebuffer):
+    char_len_threshhold = 3
     printable_str_list = []
     printable_chars = set(bytes(string_printable,'ascii'))
     temp_bytes = b""
@@ -37,7 +38,7 @@ def byte_printable(filebuffer):
         if byte in printable_chars:
             temp_bytes += bytes([byte])
         
-        elif not temp_bytes == b"\x00" and len(temp_bytes) > 2:
+        elif not temp_bytes == b"\x00" and len(temp_bytes) > char_len_threshhold:
             printable_str_list.append(temp_bytes.decode("ascii"))
             temp_bytes = b""
         else:
