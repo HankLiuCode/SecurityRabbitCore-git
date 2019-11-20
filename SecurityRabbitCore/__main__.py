@@ -5,10 +5,7 @@ import pandas
 import json
 
 from module import read_directory, process_files
-try:
-    from analysis_host import host_info
-except:
-    print("unable to load analysis_host")
+from analysis_host import host_info
 import argparse
 import sys
 

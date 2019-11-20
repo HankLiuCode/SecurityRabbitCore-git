@@ -11,8 +11,6 @@ def host_info():
     operating_system = platform.system()
     host_info_dict = {}
     
-    x = subprocess.check_output('wmic csproduct get UUID')
-    host_info_dict['deviceUUID']= x.decode("utf-8").replace('UUID','').replace('\n','').replace('\r','').replace(' ','')
     host_info_dict['deviceName'] = platform.node()
     host_info_dict['os'] = "{}-{}".format(platform.system(),platform.version())
     host_info_dict['processor'] = platform.processor()
@@ -22,6 +20,9 @@ def host_info():
     host_info_dict['MAC'] = ":".join(mac_addr)
     
     if operating_system == 'Windows':
+        x = subprocess.check_output('wmic csproduct get UUID')
+        host_info_dict['deviceUUID']= x.decode("utf-8").replace('UUID','').replace('\n','').replace('\r','').replace(' ','')
+
         import wmi
         w = wmi.WMI()
         totalSize = 0
