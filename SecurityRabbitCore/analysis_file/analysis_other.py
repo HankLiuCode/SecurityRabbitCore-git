@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+import platform
 from time import ctime as time_ctime
 
 from .analysis_pefile import analysis_pefile
@@ -34,7 +35,11 @@ def basic_file_info(filepath, testMode, isMalware=0):
     return file_info_dict
 
 def sigcheck(filepath, sigcheck_exe_path):
-    args = [sigcheck_exe_path, '-i','-nobanner', filepath]
+    operating_system = platform.system()
+    if operating_system == 'Linux':
+        args = ["wine", sigcheck_exe_path, '-i', '-l', '-nobanner', filepath]
+    elif operating_system == 'Windows':
+        args = [sigcheck_exe_path, '-i','-nobanner', filepath]
     sigcheck_process = subprocess.Popen(args, stdout=subprocess.PIPE)
     sigcheck_str = sigcheck_process.communicate()[0].decode('utf-8', 'ignore')
     sigcheck_str = sigcheck_str.replace('\r\n\t'+'  ', '\n<Certificate>')
@@ -59,7 +64,3 @@ def sigcheck(filepath, sigcheck_exe_path):
         'counter_signers':counter_signers
     }
     return sigcheck_dict
-
-    
-
-    
