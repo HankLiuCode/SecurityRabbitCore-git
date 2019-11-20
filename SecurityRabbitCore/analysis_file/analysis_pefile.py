@@ -1,3 +1,6 @@
+# !/usr/bin/python 
+# coding:utf-8 
+
 import pefile
 import peutils
 from pefile import ordlookup as pefile_ordlookup
