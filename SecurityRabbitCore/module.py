@@ -1,3 +1,5 @@
+# !/usr/bin/python 
+# coding:utf-8 
 import os
 import logging
 from analysis_file import analysis_byte
@@ -9,7 +11,14 @@ def read_directory(directory, pending_file_queue, pending_dir_queue, examineFile
     try:
         for root, dirs, files in os.walk(directory):
             for f in files:
-                if os.path.splitext(f)[-1] in examineFileType:
+                file_name_split = os.path.splitext(f)
+                file_name = ""
+                file_ext = ""
+                if len(file_name_split)>1:
+                    file_name = file_name_split[0]
+                    file_ext = file_name_split[-1]
+                
+                if  file_ext in examineFileType:
                     file_name = os.path.join(root,f)
                     pending_file_queue.put(file_name)
                     print("{} Added to pending_file_queue... ".format(file_name))

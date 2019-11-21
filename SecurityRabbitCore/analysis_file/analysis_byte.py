@@ -1,3 +1,5 @@
+# !/usr/bin/python 
+# coding:utf-8 
 from hashlib import sha1 as hashlib_sha1
 from string import printable as string_printable
 from math import log as math_log

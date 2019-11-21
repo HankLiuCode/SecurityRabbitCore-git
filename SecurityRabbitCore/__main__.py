@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     producers = multiprocessing.Pool()
     for directory in args.directories:
-        producers.apply_async(read_directory, args = (directory, pending_file_queue, pending_dir_queue))
+        producers.apply_async(read_directory, args = (directory, pending_file_queue, pending_dir_queue, ['.exe']))
     producers.close()
     producers.join()
 

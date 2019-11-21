@@ -84,7 +84,7 @@ def pefile_info(pe_file):
     # section_info [(Name, Virtual Address, Virtual Size, Raw Size, Entropy, SHA256, MD5), ...]
     section_li = []
     for section in pe_file.sections:
-        section_li.append([section.Name.decode('ascii').rstrip('\x00'), section.VirtualAddress, section.Misc_VirtualSize, section.SizeOfRawData, section.get_entropy(), section.get_hash_sha256(), section.get_hash_md5()])
+        section_li.append([section.Name.decode('utf-8').rstrip('\x00'), section.VirtualAddress, section.Misc_VirtualSize, section.SizeOfRawData, section.get_entropy(), section.get_hash_sha256(), section.get_hash_md5()])
     basic_dic['Section_info'] = section_li
     
     # import_info { dll : [API, API,....], dll : [API, API,....], ...}
@@ -93,7 +93,7 @@ def pefile_info(pe_file):
     pe_file.parse_data_directories(directories=[pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_IMPORT']])
     if hasattr(pe_file, 'DIRECTORY_ENTRY_IMPORT'):
         for entry in pe_file.DIRECTORY_ENTRY_IMPORT:
-            import_dic[entry.dll.decode('ascii')] = []
+            import_dic[entry.dll.decode('utf-8')] = []
 
             for imp in entry.imports:
                 funcname = None
@@ -103,7 +103,7 @@ def pefile_info(pe_file):
                         raise Exception("Unable to look up ordinal %s:%04x" % (entry.dll, imp.ordinal))
                 else:
                     funcname = imp.name
-                    import_dic[entry.dll.decode('ascii')].append(imp.name.decode('ascii'))
+                    import_dic[entry.dll.decode('utf-8')].append(imp.name.decode('utf-8'))
 
                 if not funcname:
                     continue
@@ -117,7 +117,7 @@ def pefile_info(pe_file):
     pe_file.parse_data_directories(directories=[pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_EXPORT']])
     if hasattr(pe_file, 'DIRECTORY_ENTRY_EXPORT'):
         for exp in pe_file.DIRECTORY_ENTRY_EXPORT.symbols:
-            export_li.append(exp.name.decode('ascii'))    # export_li.append([hex(pe_file.OPTIONAL_HEADER.ImageBase + exp.address), exp.name.decode('ascii'), exp.ordinal])
+            export_li.append(exp.name.decode('utf-8'))    # export_li.append([hex(pe_file.OPTIONAL_HEADER.ImageBase + exp.address), exp.name.decode('ascii'), exp.ordinal])
     basic_dic['Export_directories'] = export_li
     
             
