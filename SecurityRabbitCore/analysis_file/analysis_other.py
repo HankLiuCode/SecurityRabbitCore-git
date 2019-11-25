@@ -49,21 +49,54 @@ def sigcheck(filepath, sigcheck_exe_path):
     sigcheck_str = sigcheck_str.replace('\r\n\t\t', '\n<Certi Info>')
     sigcheck_str = sigcheck_str.replace('\r\n\t', '\n<attribute>')
     sigcheck_str = sigcheck_str.replace('\t','')
-    
+
+    attributes = {}
     signers = None
     counter_signers = None
-    try:
-        signers_info = re.search('<attribute>Signers:([\s\S]*)<attribute>Counter Signers:',sigcheck_str).group(1)
-        counter_signers_info = re.search('<attribute>Counter Signers:([\s\S]*)',sigcheck_str).group(1)
-        signers = re.findall('(?:\s<Certificate>(.*)(?:\s<Certi Info>.*)*)',signers_info)
-        counter_signers = re.findall('(?:\s<Certificate>(.*)(?:\s<Certi Info>.*)*)', counter_signers_info)
+    signers_info = None
+    counter_signers_info = None
 
+    try:
+        attrs = re.findall('<attribute>(?:)(?!Signers|Counter Signers|Catalog)(.*)',sigcheck_str)
+        for attr in attrs:
+            attr_key = attr.split(":",1)[0]
+            attr_val = attr.split(":",1)[1]
+            attributes[attr_key] = attr_val
+            
+        signers_section = re.search('<attribute>Signers:([\s\S]*)<attribute>Counter Signers:',sigcheck_str).group(1)
+        signers = re.findall('(?:\s<Certificate>(.*)(?:\s<Certi Info>.*)*)',signers_section)
+        signers_info = get_signers_info(signers_section)
+        
+        counter_signers_section = re.search('<attribute>Counter Signers:([\s\S]*)',sigcheck_str).group(1)
+        counter_signers = re.findall('(?:\s<Certificate>(.*)(?:\s<Certi Info>.*)*)', counter_signers_section)
+        counter_signers_info = get_signers_info(counter_signers_section)
     except:
+
+        attributes = []
         signers = []
         counter_signers = []
+        signers_info = []
+        counter_signers_info = []
 
     sigcheck_dict = {
-        'signers':signers,
-        'counter_signers':counter_signers
+        'signers':signers_info,
+        'counter_signers':counter_signers_info
     }
+    sigcheck_dict.update(attributes)
     return sigcheck_dict
+
+def get_signers_info(section_str):
+    signers_info = []
+    temp_list = []
+    for line in section_str.splitlines():
+        line = line.strip()
+        if '<Certificate>' in line:
+            if not len(temp_list) == 0:
+                signers_info.append(temp_list)
+                temp_list.clear()
+            temp_list.append(line.replace('<Certificate>',''))
+        elif '<Certi Info>' in line:
+            temp_list.append(line.replace('<Certi Info>',''))
+    signers_info.append(temp_list)
+    
+    return signers_info

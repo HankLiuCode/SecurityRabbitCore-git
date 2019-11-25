@@ -21,9 +21,11 @@ if __name__ == '__main__':
     multiprocessing.freeze_support()
     parser = argparse.ArgumentParser()
     parser.add_argument("directories", nargs="+", help="the root directory(s) you want to scan")
-    parser.add_argument("--scanType", help= "0:quickScan, 1:normalScan, 2:deepScan")
+    parser.add_argument("--is_testmode", dest="is_testmode", help="only used in development")
+    parser.add_argument("--scan_type", dest="scantype", help= "quick_scan, normal_scan, deep_scan")
     
     args = parser.parse_args()
+
     manager = multiprocessing.Manager()
     problem_file_queue = manager.Queue()
     pending_file_queue = manager.Queue()
@@ -62,6 +64,7 @@ if __name__ == '__main__':
     data['fileinfo'] = files_df.to_json(orient="records")
     data['errorfile'] = error_files_df.to_json(orient="records")
     data['metainfo'] = {
+        "scan_type":args.scantype,
         "start_time":start_time.ctime(),
         "end_time":end_time.ctime(),
         "scan_duration":(end_time-start_time).seconds
