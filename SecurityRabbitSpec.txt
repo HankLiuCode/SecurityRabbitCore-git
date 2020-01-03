@@ -1,0 +1,46 @@
+--------------------------------------
+	SecurityRabbitCore
+		-FileQueue
+		-FileFeatureQueue
+		-FileProducerFactory(FileQueue, dir_or_file_names)
+		-FileFeatureExtractorFactory(FileQueue, FileFeatureQueue)
+		-FileFeatureConsumerFactory(FileFeatureQueue, output_file_name)
+
+		+start() (total duration, average/longest file process time, )
+
+------------------------------------
+	FileProducerFactory
+		constructor(FileQueue, dir_or_file_names)
+		+spawn()
+		
+	FileProducer
+		+produce()
+-------------------------------------
+	FileFeatureExtractorFactory
+		constructor(FileQueue, FileFeatureQueue)
+		+spawn()
+
+	FileFeatureExtractor
+		+extract(filepath)
+--------------------------------------
+	FileFeatureConsumerFactory
+		constructor(FileFeatureQueue, output_file_name)
+		+spawn()
+
+	FileFeatureConsumer
+		+consume(dict)
+		-write()
+---------------------------------------
+
+
+todo
+	-write file producer test
+	-write file producer
+	-write file feature extractor test
+	-write file feature extractor
+
+	
+	-write file feature consumer test
+	-write file feature consumer 
+	-write security rabbit core test
+	-write security rabbit core
