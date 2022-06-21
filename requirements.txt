@@ -18,7 +18,7 @@ importlib-metadata==0.23
 jdcal==1.4.1
 kombu==4.6.5
 more-itertools==7.2.0
-numpy==1.17.3
+numpy==1.22.0
 openpyxl==3.0.0
 pandas==0.25.2
 pefile==2019.4.18
